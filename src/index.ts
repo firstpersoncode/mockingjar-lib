@@ -13,6 +13,7 @@ import {
   updateArrayItemFieldType,
   deleteField,
   GenerateSchemaPreviewOptions,
+  handleSchemaSelected,
 } from './lib/schema';
 
 export const generateJsonData = async (
@@ -48,6 +49,7 @@ export const add = {
 export const update = {
   fieldType: updateFieldType,
   arrayItemFieldType: updateArrayItemFieldType,
+  fieldTypeSchema: handleSchemaSelected
 };
 
 export const remove = {
