@@ -388,6 +388,20 @@ export const handleSchemaSelected = (
   };
 };
 
+export const updateField = (
+  targetId: string,
+  updates: Partial<SchemaField>,
+  schema: JsonSchema
+): JsonSchema => {
+  return {
+    ...schema,
+    fields: findAndUpdateField(schema.fields, targetId, (field) => ({
+      ...field,
+      ...updates,
+    })),
+  };
+};
+
 export const updateFieldType = (
   targetId: string,
   newType: SchemaField['type'],
