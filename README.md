@@ -26,7 +26,6 @@ This library serves as the core engine for JSON schema manipulation, data genera
 ## Installation
 
 ```bash
-# Clone the repository
 npm install mockingjar-lib
 ```
 
