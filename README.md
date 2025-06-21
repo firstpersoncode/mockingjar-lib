@@ -1,4 +1,4 @@
-# MockingJar Backend - JSON Data Generator
+# MockingJar Library - JSON Data Generator
 
 **A TypeScript library for AI-powered JSON schema creation and test data generation.**
 
@@ -17,7 +17,7 @@
 
 ## Overview
 
-MockingJar Backend is a TypeScript library that provides JSON schema creation and AI-powered data generation capabilities. Built with modern TypeScript, comprehensive testing, and integrated with Anthropic Claude AI, it enables developers to create complex JSON structures and generate realistic data through natural language prompts.
+MockingJar Library is a TypeScript library that provides JSON schema creation and AI-powered data generation capabilities. Built with modern TypeScript, comprehensive testing, and integrated with Anthropic Claude AI, it enables developers to create complex JSON structures and generate realistic data through natural language prompts.
 
 This library serves as the core engine for JSON schema manipulation, data generation, and validation, designed to be integrated into web applications, CLI tools, or other TypeScript/Node.js projects.
 
@@ -150,7 +150,7 @@ console.log('Generation metadata:', result.metadata);
 ### Schema Manipulation
 
 ```typescript
-import { add, update, remove, convertSchemaToJson } from 'mockbird-backend';
+import { add, update, remove, convertSchemaToJson } from 'mockingjar-lib';
 
 let schema: JsonSchema = {
     name: 'Test',
@@ -185,7 +185,7 @@ const jsonPreview = convertSchemaToJson(schema.fields, {
 ### Working with Actual Schema Structure
 
 ```typescript
-import { generateJsonData, JsonSchema } from 'mockbird-backend';
+import { generateJsonData, JsonSchema } from 'mockingjar-lib';
 
 // The schema manipulation functions work with the actual schema structure
 // and return new schemas with auto-generated IDs and default values
@@ -511,7 +511,7 @@ npm run test:ci
 
 ## Contributing
 
-**MockingJar Backend thrives on community collaboration!** We welcome contributions from developers of all experience levels.
+**MockingJar Library thrives on community collaboration!** We welcome contributions from developers of all experience levels.
 
 ### 🌟 Ways to Contribute
 
@@ -624,7 +624,7 @@ npm run test:ci
 
 ## MIT License
 
-Copyright (c) 2025 MockingJar Backend
+Copyright (c) 2025 MockingJar Library
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -646,4 +646,4 @@ SOFTWARE.
 
 ---
 
-*MockingJar Backend - Powering intelligent JSON schema creation and data generation.*
+*MockingJar Library - Powering intelligent JSON schema creation and data generation.*
