@@ -262,7 +262,7 @@ The project uses TypeScript path aliases for clean imports:
 
 ```typescript
 // Instead of: import { generateData } from '../../../lib/generator'
-import { generateData } from '@/lib/generator';
+import { generateJsonData } from '@/lib/generator';
 ```
 
 ### Development Workflow

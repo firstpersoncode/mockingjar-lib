@@ -1,6 +1,6 @@
 {
   "name": "mockingjar-lib",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A TypeScript library for AI-powered JSON mock data generation using schema-based configuration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
