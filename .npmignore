@@ -1,0 +1,36 @@
+# Source files
+src/
+tsconfig.json
+tsconfig.build.json
+
+# Development files
+.env
+.env.*
+coverage/
+*.log
+*.tgz
+
+# Build scripts
+scripts/
+
+# Development configs
+jest.config.js
+eslint.config.mjs
+.eslintignore
+
+# Git
+.git/
+.github/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/

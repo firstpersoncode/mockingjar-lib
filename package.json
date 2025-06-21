@@ -1,0 +1,77 @@
+{
+  "name": "mockingjar-lib",
+  "version": "1.0.0",
+  "description": "A TypeScript library for AI-powered JSON mock data generation using schema-based configuration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE.md",
+    "USAGE.md"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/firstpersoncode/mockingjar-lib.git"
+  },
+  "homepage": "https://github.com/firstpersoncode/mockingjar-lib#readme",
+  "bugs": {
+    "url": "https://github.com/firstpersoncode/mockingjar-lib/issues"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json && npm run minify",
+    "build:clean": "rm -rf dist && tsc --project tsconfig.build.json && npm run minify",
+    "build:watch": "tsc --project tsconfig.build.json --watch",
+    "build:no-minify": "tsc --project tsconfig.build.json",
+    "minify": "node scripts/minify.js",
+    "compile": "tsc --noEmit",
+    "compile:check": "tsc --noEmit --skipLibCheck",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --watchAll=false",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
+    "lint:check": "eslint 'src/**/*.{ts,tsx}' --max-warnings 0",
+    "prepublishOnly": "npm run build:clean && npm test"
+  },
+  "keywords": [
+    "mock-data",
+    "json-generation",
+    "ai-powered",
+    "schema-based",
+    "typescript",
+    "anthropic",
+    "data-generation",
+    "testing",
+    "fake-data"
+  ],
+  "author": "fpcdatadriver@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/parser": "^8.34.1",
+    "eslint": "^9.29.0",
+    "eslint-plugin-jest": "^29.0.1",
+    "jest": "^30.0.2",
+    "terser": "^5.43.1",
+    "ts-jest": "^29.4.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.54.0",
+    "@types/lodash": "^4.17.18",
+    "@types/uuid": "^10.0.0",
+    "dotenv": "^16.5.0",
+    "lodash": "^4.17.21",
+    "uuid": "^11.1.0"
+  }
+}
