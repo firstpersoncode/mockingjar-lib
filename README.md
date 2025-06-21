@@ -526,7 +526,7 @@ npm run test:ci
 
 1. **Fork and Clone**
    ```bash
-   git clone your-fork-url
+   git clone https://github.com/firstpersoncode/mockingjar-lib
    cd mockingjar-lib
    ```
 
