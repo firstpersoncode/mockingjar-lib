@@ -341,7 +341,7 @@ export const addArrayItemObjectField = (
   };
 };
 
-const handleSchemaSelected = (
+export const handleSchemaSelected = (
   targetId: string,
   schema: JsonSchema,
   selectedSchema: JsonSchema
