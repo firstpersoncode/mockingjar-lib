@@ -3,7 +3,7 @@ import { JsonSchema, SchemaField } from '@/types/schema';
 import { GenerationResult, GenerationOptions } from '@/types/generation';
 import { jsonValidator, ValidationError } from './validation';
 import { convertSchemaToJson } from './schema';
-import { logDebugData, resetDebugSession } from './_debugger';
+// import { logDebugData, resetDebugSession } from './_debugger';
 import { merge, cloneDeep, unset, pick } from 'lodash';
 import { MessageParam } from '@anthropic-ai/sdk/resources/messages.mjs';
 
@@ -290,15 +290,15 @@ export async function generateJsonData(
 
     // Increment attempts counter for this function call
     totalAttempts++;
-    logDebugData('currentSchema.json', currentSchema);
+    // logDebugData('currentSchema.json', currentSchema);
 
     const clonedContext = validContext ? cloneDeep(validContext) : null;
 
-    logDebugData('validContext.json', clonedContext);
+    // logDebugData('validContext.json', clonedContext);
 
     const convertedSchema = convertSchemaToJson(currentSchema.fields);
 
-    logDebugData('convertedSchema.json', convertedSchema);
+    // logDebugData('convertedSchema.json', convertedSchema);
 
     // Single API call - no retry loop
     const apiCall = anthropic.messages.create({
@@ -342,18 +342,18 @@ export async function generateJsonData(
       throw new Error('Invalid JSON response from Claude');
     }
 
-    logDebugData('jsonResult.json', jsonResult);
+    // logDebugData('jsonResult.json', jsonResult);
 
     const validationErrors = jsonValidator(jsonResult, currentSchema);
-    logDebugData('validationErrors.json', validationErrors);
+    // logDebugData('validationErrors.json', validationErrors);
     const unidentifiedFields = validationErrors.filter(
       (error) => error.reason === 'Unidentified field'
     );
-    logDebugData('unidentifiedFields.json', unidentifiedFields);
+    // logDebugData('unidentifiedFields.json', unidentifiedFields);
     const otherErrors = validationErrors.filter(
       (error) => error.reason !== 'Unidentified field'
     );
-    logDebugData('otherErrors.json', otherErrors);
+    // logDebugData('otherErrors.json', otherErrors);
 
     const errorFields: string[] = [];
 
@@ -372,29 +372,29 @@ export async function generateJsonData(
       }
     }
 
-    logDebugData('errorFields.json', errorFields);
-    logDebugData('regeneratedFields.json', regeneratedFields);
+    // logDebugData('errorFields.json', errorFields);
+    // logDebugData('regeneratedFields.json', regeneratedFields);
 
-    const fixedFields = regeneratedFields.filter((field) => {
-      return !errorFields.includes(field);
-    });
+    // const fixedFields = regeneratedFields.filter((field) => {
+    //   return !errorFields.includes(field);
+    // });
 
-    logDebugData('fixedFields.json', fixedFields);
+    // logDebugData('fixedFields.json', fixedFields);
 
     if (unidentifiedFields.length > 0) {
       jsonResult = removeUnidentifiedFields(jsonResult, unidentifiedFields);
-      logDebugData('jsonResult.cleaned.json', jsonResult);
+      // logDebugData('jsonResult.cleaned.json', jsonResult);
     }
 
     if (otherErrors.length === 0) {
       const result = merge(clonedContext, jsonResult);
-      logDebugData('validContext.json', result);
+      // logDebugData('validContext.json', result);
       results.push(result);
       return;
     }
 
     const extractedValidContext = extractValidContext(jsonResult, otherErrors);
-    logDebugData('extractedValidContext.json', extractedValidContext);
+    // logDebugData('extractedValidContext.json', extractedValidContext);
     // Recursively fix the errors
     return generate(
       generatePartialSchema(currentSchema, errorFields),
@@ -423,9 +423,9 @@ export async function generateJsonData(
       },
     };
 
-    logDebugData('generationResult.json', result);
+    // logDebugData('generationResult.json', result);
 
-    resetDebugSession(); // Reset debug session for next run
+    // resetDebugSession(); // Reset debug session for next run
 
     return result;
   } catch (error) {
@@ -449,9 +449,9 @@ export async function generateJsonData(
       },
     };
 
-    logDebugData('generationError.json', result);
+    // logDebugData('generationError.json', result);
 
-    resetDebugSession(); // Reset debug session for next run
+    // resetDebugSession(); // Reset debug session for next run
 
     return result;
   }
