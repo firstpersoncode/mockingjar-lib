@@ -5,19 +5,19 @@ import { generateJsonData as _generateJsonData } from './lib/generator';
 import { GenerationOptions, GenerationResult } from './types/generation';
 import { JsonSchema } from './types/schema';
 import {
-  convertSchemaToJson as _convertSchemaToJson,
+  convertSchemaToJson,
   addField,
   addObjectField,
   addArrayItemObjectField,
   updateFieldType,
   updateArrayItemFieldType,
   deleteField,
-  GenerateSchemaPreviewOptions,
   handleSchemaSelected,
   updateField,
 } from './lib/schema';
+import { jsonValidator } from './lib/validation';
 
-export const generateJsonData = async (
+const generateJsonData = async (
   anthropicKey: string,
   schema: JsonSchema,
   prompt: string,
@@ -34,26 +34,31 @@ export const generateJsonData = async (
   return _generateJsonData(anthropic, schema, prompt, options);
 };
 
-export const convertSchemaToJson = (
-  schema: JsonSchema,
-  options: GenerateSchemaPreviewOptions = {}
-): Record<string, unknown> => {
-  return _convertSchemaToJson(schema.fields, options);
+export const Generator = {
+  generate: generateJsonData,
+  _generate: _generateJsonData,
 };
 
-export const add = {
-  field: addField,
-  objectField: addObjectField,
-  arrayItemObjectField: addArrayItemObjectField,
+export const Schema = {
+  add: {
+    field: addField,
+    objectField: addObjectField,
+    arrayItemObjectField: addArrayItemObjectField,
+  },
+  update: {
+    field: updateField,
+    fieldType: updateFieldType,
+    arrayItemFieldType: updateArrayItemFieldType,
+    fieldTypeSchema: handleSchemaSelected,
+  },
+  delete: {
+    field: deleteField,
+  },
+  convert: {
+    schemaToJson: convertSchemaToJson,
+  },
 };
 
-export const update = {
-  field: updateField,
-  fieldType: updateFieldType,
-  arrayItemFieldType: updateArrayItemFieldType,
-  fieldTypeSchema: handleSchemaSelected,
-};
-
-export const remove = {
-  field: deleteField,
+export const Validation = {
+  validate: jsonValidator,
 };

@@ -274,6 +274,24 @@ function validateFieldConstraints(
   
   // String constraints
   if ((field.type === 'text' || field.type === 'email' || field.type === 'url') && typeof value === 'string') {
+    if (logic.enum && !logic.enum.includes(value)) {
+      errors.push({
+        parent: parentPath || null,
+        affectedField: fieldPath,
+        reason: 'value not allowed',
+        structure: field
+      });
+    }
+    
+    if (logic.pattern && !new RegExp(logic.pattern).test(value)) {
+      errors.push({
+        parent: parentPath || null,
+        affectedField: fieldPath,
+        reason: 'pattern mismatch',
+        structure: field
+      });
+    }
+    
     if (logic.minLength && value.length < logic.minLength) {
       errors.push({
         parent: parentPath || null,
@@ -292,7 +310,12 @@ function validateFieldConstraints(
       });
     }
     
-    if (logic.enum && !logic.enum.includes(value)) {
+    
+  }
+  
+  // Number constraints
+  if (field.type === 'number' && typeof value === 'number') {
+    if (logic.enum && !logic.enum.map(String).includes(String(value))) {
       errors.push({
         parent: parentPath || null,
         affectedField: fieldPath,
@@ -300,10 +323,7 @@ function validateFieldConstraints(
         structure: field
       });
     }
-  }
-  
-  // Number constraints
-  if (field.type === 'number' && typeof value === 'number') {
+    
     if (logic.min !== undefined && value < logic.min) {
       errors.push({
         parent: parentPath || null,
@@ -321,6 +341,8 @@ function validateFieldConstraints(
         structure: field
       });
     }
+    
+    
   }
   
   // Array constraints

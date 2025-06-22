@@ -1,6 +1,6 @@
 {
   "name": "mockingjar-lib",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A TypeScript library for AI-powered JSON mock data generation using schema-based configuration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -38,7 +38,7 @@
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
     "lint:check": "eslint 'src/**/*.{ts,tsx}' --max-warnings 0",
-    "prepublishOnly": "npm run build:clean && npm test"
+    "prepublishOnly": "npm run build:clean && npm run test:coverage"
   },
   "keywords": [
     "mock-data",

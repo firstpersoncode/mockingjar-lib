@@ -127,11 +127,12 @@ export const convertSchemaFieldToJson = (
 };
 
 export const convertSchemaToJson = (
-  fields: SchemaField[],
+  schema: JsonSchema,
   configs: GenerateSchemaPreviewOptions = {}
 ): Record<string, unknown> => {
   const preview: Record<string, unknown> = {};
   const usedTopLevelKeys = new Set<string>();
+  const fields = schema.fields || [];
 
   fields.forEach((field) => {
     let keyName = field.name;

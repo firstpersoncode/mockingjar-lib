@@ -296,7 +296,7 @@ export async function generateJsonData(
 
     // logDebugData('validContext.json', clonedContext);
 
-    const convertedSchema = convertSchemaToJson(currentSchema.fields);
+    const convertedSchema = convertSchemaToJson(currentSchema);
 
     // logDebugData('convertedSchema.json', convertedSchema);
 
