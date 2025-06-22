@@ -35,13 +35,16 @@ export default [
       'no-console': 'warn',
       'prefer-const': 'error',
       'no-var': 'error',
-      'quotes': ['error', 'single'],
-      'semi': ['error', 'always'],
+      quotes: ['error', 'single'],
+      semi: ['error', 'always'],
       'no-case-declarations': 'off',
       'no-prototype-builtins': 'off',
-      
+
       // TypeScript specific rules
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
@@ -83,6 +86,13 @@ export default [
       'coverage/**',
       '*.config.js',
       '*.config.mjs',
+      '.env*',
+      '.vscode/',
+      '.idea/',
+      '.DS_Store',
+      'Thumbs.db',
+      'logs/**',
+      '*.log',
     ],
   },
 ];
