@@ -155,66 +155,7 @@ if (errors.length === 0) {
 }
 ```
 
-### Advanced Usage with Complex Schema
-
-```typescript
-import { Generator } from 'mockingjar-lib';
-
-// Complex nested schema
-const orderSchema = {
-  name: 'Order',
-  description: 'E-commerce order data',
-  fields: [
-    {
-      id: '1',
-      name: 'orderId',
-      type: 'text',
-      logic: { required: true, pattern: '^ORD-\\d{6}$' }
-    },
-    {
-      id: '2',
-      name: 'customer',
-      type: 'object',
-      children: [
-        { id: '2a', name: 'name', type: 'text', logic: { required: true } },
-        { id: '2b', name: 'email', type: 'email', logic: { required: true } }
-      ]
-    },
-    {
-      id: '3',
-      name: 'items',
-      type: 'array',
-      logic: { minItems: 1, maxItems: 10 },
-      arrayItemType: {
-        id: '3-item',
-        name: 'item',
-        type: 'object',
-        children: [
-          { id: '3a', name: 'name', type: 'text' },
-          { id: '3b', name: 'price', type: 'number', logic: { min: 0 } },
-          { id: '3c', name: 'quantity', type: 'number', logic: { min: 1 } }
-        ]
-      }
-    }
-  ]
-};
-
-// Generate order data with error recovery
-const result = await Generator.generate(
-  'your-anthropic-api-key',
-  orderSchema,
-  'Generate realistic e-commerce order data with various products',
-  {
-    count: 10,
-    maxAttempts: 5,
-    enableFallback: true,
-    timeout: 120000
-  }
-);
-
-console.log('Orders generated:', result.data?.length);
-console.log('Generation metadata:', result.metadata);
-```
+For detailed usage, see [USAGE.md](./USAGE.md).
 
 ---
 
