@@ -347,6 +347,7 @@ export const convertJsonToSchema = (
 export const findAndUpdateField = (
   fields: SchemaField[],
   targetId: string,
+  // eslint-disable-next-line no-unused-vars
   updater: (field: SchemaField) => SchemaField
 ): SchemaField[] => {
   return fields.map((field) => {
