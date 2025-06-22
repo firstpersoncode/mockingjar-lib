@@ -198,8 +198,7 @@ function createMessages(
   const messages: MessageParam[] = [
     {
       role: 'assistant',
-      content:
-        "Hello, I am structured data assistant. My task is to generate valid JSON values based on user's prompt. I will respond only with valid JSON, no markdown or explanations.",
+      content: 'Hello, I am structured data assistant. My task is to generate valid JSON values based on user\'s prompt. I will respond only with valid JSON, no markdown or explanations.',
     },
   ];
 
