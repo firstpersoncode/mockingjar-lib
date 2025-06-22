@@ -487,12 +487,6 @@ npm run test:coverage
 npm run test:ci
 ```
 
-### Test Statistics
-- **Total Tests**: 146 tests across 6 test suites
-- **Code Coverage**: 88.32% overall coverage
-- **Test Framework**: Jest with TypeScript support
-- **Coverage Reports**: HTML and LCOV reports generated
-
 ---
 
 ## Contributing
