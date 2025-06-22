@@ -198,7 +198,8 @@ function createMessages(
   const messages: MessageParam[] = [
     {
       role: 'assistant',
-      content: 'Hello, I am structured data assistant. My task is to generate valid JSON values based on user\'s prompt. I will respond only with valid JSON, no markdown or explanations.',
+      content:
+        "Hello, I am structured data assistant. My task is to generate valid JSON values based on user's prompt. I will respond only with valid JSON, no markdown or explanations.",
     },
   ];
 
@@ -319,7 +320,10 @@ export async function generateJsonData(
       ? Promise.race([
           apiCall,
           new Promise((_, reject) => {
-            timeoutId = setTimeout(() => reject(new Error('Request timeout')), timeout);
+            timeoutId = setTimeout(
+              () => reject(new Error('Request timeout')),
+              timeout
+            );
           }),
         ]).finally(() => {
           if (timeoutId) {
@@ -327,10 +331,6 @@ export async function generateJsonData(
           }
         })
       : apiCall)) as { content?: Array<{ type: string; text: string }> };
-
-      if (!response.content?.[0]) {
-        console.log('ERROR');
-      }
 
     const content = response.content?.[0];
     if (!content || content.type !== 'text') {
@@ -434,11 +434,6 @@ export async function generateJsonData(
 
     return result;
   } catch (error) {
-    console.log(
-      'GENERATOR ERROR:',
-      error instanceof Error ? error.message : 'Unknown error'
-    );
-
     const result = {
       success: false,
       errors: [
