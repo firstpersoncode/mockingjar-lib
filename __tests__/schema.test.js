@@ -854,10 +854,11 @@ describe('Schema Module', () => {
         
         const result = Schema.delete.field('deep-nested-item', schemaWithNestedArray);
         
-        // Implementation doesn't handle deletion of nested array items correctly
-        // The nested arrayItemType still exists instead of being removed
+        // Array item object is replaced with text field (new UUID generated)
         expect(result.fields[0].arrayItemType.arrayItemType).toBeDefined();
-        expect(result.fields[0].arrayItemType.arrayItemType.id).toBe('deep-nested-item');
+        expect(result.fields[0].arrayItemType.arrayItemType.type).toBe('text');
+        expect(result.fields[0].arrayItemType.arrayItemType.name).toBe('deepItem');
+        expect(result.fields[0].arrayItemType.arrayItemType.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       });
 
       test('should handle deeply nested object deletion', () => {
