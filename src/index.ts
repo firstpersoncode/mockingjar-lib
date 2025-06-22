@@ -14,6 +14,7 @@ import {
   deleteField,
   handleSchemaSelected,
   updateField,
+  convertJsonToSchema,
 } from './lib/schema';
 import { jsonValidator } from './lib/validation';
 
@@ -56,6 +57,7 @@ export const Schema = {
   },
   convert: {
     schemaToJson: convertSchemaToJson,
+    jsonToSchema: convertJsonToSchema
   },
 };
 

@@ -155,6 +155,178 @@ export const convertSchemaToJson = (
 };
 
 /**
+ * Detects the appropriate schema field type based on the JSON value
+ */
+const detectFieldType = (value: unknown): SchemaField['type'] => {
+  if (value === null || value === undefined) {
+    return 'text'; // Default to text for null values
+  }
+
+  if (typeof value === 'boolean') {
+    return 'boolean';
+  }
+
+  if (typeof value === 'number') {
+    return 'number';
+  }
+
+  if (typeof value === 'string') {
+    // Email pattern detection
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(value)) {
+      return 'email';
+    }
+
+    // URL pattern detection
+    const urlRegex = /^https?:\/\/[^\s]+$/;
+    if (urlRegex.test(value)) {
+      return 'url';
+    }
+
+    // Date pattern detection (ISO 8601, common formats)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$|^\d{2}\/\d{2}\/\d{4}$|^\d{2}-\d{2}-\d{4}$/;
+    if (dateRegex.test(value)) {
+      return 'date';
+    }
+
+    return 'text';
+  }
+
+  if (Array.isArray(value)) {
+    return 'array';
+  }
+
+  if (typeof value === 'object') {
+    return 'object';
+  }
+
+  return 'text';
+};
+
+/**
+ * Generates field logic constraints based on the actual JSON value
+ */
+const generateFieldLogic = (value: unknown, type: SchemaField['type']): SchemaField['logic'] => {
+  const logic: SchemaField['logic'] = {
+    required: value !== null && value !== undefined,
+  };
+
+  if (type === 'text' || type === 'email' || type === 'url') {
+    if (typeof value === 'string') {
+      logic.maxLength = value.length;
+      if (value.length > 0) {
+        logic.minLength = 1;
+      }
+    }
+  }
+
+  if (type === 'number' && typeof value === 'number') {
+    // Set min/max with some buffer for generation variety
+    const buffer = Math.abs(value) * 0.1 || 1;
+    logic.min = Math.floor(value - buffer);
+    logic.max = Math.ceil(value + buffer);
+  }
+
+  if (type === 'array' && Array.isArray(value)) {
+    logic.maxItems = value.length;
+    logic.minItems = Math.max(1, value.length - 1);
+  }
+
+  return logic;
+};
+
+/**
+ * Recursively converts a JSON value to a SchemaField
+ */
+const convertValueToSchemaField = (key: string, value: unknown): SchemaField => {
+  const type = detectFieldType(value);
+  const logic = generateFieldLogic(value, type);
+
+  const field: SchemaField = {
+    id: uuidv4(),
+    name: key,
+    type,
+    logic,
+  };
+
+  if (type === 'object' && value && typeof value === 'object' && !Array.isArray(value)) {
+    const obj = value as Record<string, unknown>;
+    field.children = Object.entries(obj).map(([childKey, childValue]) =>
+      convertValueToSchemaField(childKey, childValue)
+    );
+  }
+
+  if (type === 'array' && Array.isArray(value)) {
+    if (value.length > 0) {
+      // Analyze the first item to determine array item type
+      // For mixed arrays, we'll use the most common type or default to object if complex
+      const firstItem = value[0];
+      field.arrayItemType = convertValueToSchemaField('item', firstItem);
+      
+      // If array contains objects, ensure we capture all possible fields
+      if (typeof firstItem === 'object' && firstItem !== null && !Array.isArray(firstItem)) {
+        const allKeys = new Set<string>();
+        const fieldMap = new Map<string, unknown[]>();
+
+        // Collect all unique keys and their values across all array items
+        value.forEach(item => {
+          if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+            const itemObj = item as Record<string, unknown>;
+            Object.entries(itemObj).forEach(([k, v]) => {
+              allKeys.add(k);
+              if (!fieldMap.has(k)) {
+                fieldMap.set(k, []);
+              }
+              fieldMap.get(k)!.push(v);
+            });
+          }
+        });
+
+        // Create schema fields for each unique key
+        if (allKeys.size > 0) {
+          field.arrayItemType = {
+            id: uuidv4(),
+            name: 'item',
+            type: 'object',
+            logic: { required: false },
+            children: Array.from(allKeys).map(key => {
+              const values = fieldMap.get(key) || [];
+              // Use the first non-null value for type detection and logic generation
+              const sampleValue = values.find(v => v !== null && v !== undefined) || values[0];
+              return convertValueToSchemaField(key, sampleValue);
+            }),
+          };
+        }
+      }
+    } else {
+      // Empty array - default to text items
+      field.arrayItemType = {
+        id: uuidv4(),
+        name: 'item',
+        type: 'text',
+        logic: { required: false },
+      };
+    }
+  }
+
+  return field;
+};
+
+export const convertJsonToSchema = (
+  json: Record<string, unknown>,
+  schemaName: string = 'Converted Schema'
+): JsonSchema => {
+  const fields = Object.entries(json).map(([key, value]) =>
+    convertValueToSchemaField(key, value)
+  );
+
+  return {
+    name: schemaName,
+    fields,
+  };
+};
+
+/**
  * Find and update a field by ID anywhere in the nested structure
  */
 export const findAndUpdateField = (
