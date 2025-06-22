@@ -174,7 +174,7 @@ export const findAndUpdateField = (
         targetId,
         updater
       );
-      if (updatedChildren !== field.children) {
+      if (!isEqual(updatedChildren, field.children)) {
         return { ...field, children: updatedChildren };
       }
     }
@@ -192,7 +192,7 @@ export const findAndUpdateField = (
           targetId,
           updater
         );
-        if (updatedArrayItemChildren !== field.arrayItemType.children) {
+        if (!isEqual(updatedArrayItemChildren, field.arrayItemType.children)) {
           return {
             ...field,
             arrayItemType: {
@@ -210,7 +210,7 @@ export const findAndUpdateField = (
           targetId,
           updater
         );
-        if (nestedResult[0] !== field.arrayItemType) {
+        if (!isEqual(nestedResult[0], field.arrayItemType)) {
           return { ...field, arrayItemType: nestedResult[0] };
         }
       }
@@ -236,6 +236,18 @@ export const findAndRemoveField = (
         if (!isEqual(updatedChildren, field.children)) {
           return { ...field, children: updatedChildren };
         }
+      }
+
+      // Check if arrayItemType itself should be deleted
+      if (field.arrayItemType?.id === targetId) {
+        return { 
+          ...field, 
+          arrayItemType: {
+            id: uuidv4(),
+            name: field.arrayItemType?.name || 'newField',
+            type: 'text',
+          }
+        };
       }
 
       // Check arrayItemType children
