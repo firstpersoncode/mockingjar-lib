@@ -3,7 +3,7 @@
 **A TypeScript library for AI-powered JSON schema creation and test data generation.**
 
 1. **[Overview](#overview)**
-2. **[Installation & Setup](#installation--setup)**
+2. **[Installation](#installation)**
 3. **[Usage](#usage)**
 4. **[Development](#development)**
 5. **[Technology Stack](#technology-stack)**
@@ -12,6 +12,7 @@
 8. **[Testing](#testing)**
 9. **[Contributing](#contributing)**
 10. **[MIT License](#mit-license)**
+11. **[Support](#support)**
 
 ---
 
@@ -36,10 +37,10 @@ npm install mockingjar-lib
 ### Basic Usage
 
 ```typescript
-import { generateJsonData, JsonSchema } from 'mockingjar-lib';
+import { Generator, Schema, Validation } from 'mockingjar-lib';
 
 // Define a schema
-const userSchema: JsonSchema = {
+const userSchema = {
   name: 'User',
   description: 'User profile data',
   fields: [
@@ -64,8 +65,8 @@ const userSchema: JsonSchema = {
   ]
 };
 
-// Generate data
-const result = await generateJsonData(
+// Generate data using the Generator module
+const result = await Generator.generate(
   'your-anthropic-api-key',
   userSchema,
   'Generate realistic user data for a social media platform',
@@ -85,13 +86,82 @@ if (result.success) {
 }
 ```
 
+### Schema Manipulation
+
+```typescript
+import { Schema } from 'mockingjar-lib';
+
+let mySchema = {
+  name: 'User',
+  fields: [
+    {
+      id: 'user-1',
+      name: 'name',
+      type: 'text',
+      logic: { required: true }
+    }
+  ]
+};
+
+// Add a new field to the schema root
+mySchema = Schema.add.field(mySchema);
+
+// Add a field to an object (requires object field id)
+mySchema = Schema.add.objectField('object-field-id', mySchema);
+
+// Add a field to an array item object (requires array field id)
+mySchema = Schema.add.arrayItemObjectField('array-field-id', mySchema);
+
+// Update field type (requires field id and new type)
+mySchema = Schema.update.fieldType(mySchema, 'field-id', 'email');
+
+// Update array item field type (requires field id and new type)
+mySchema = Schema.update.arrayItemFieldType(mySchema, 'array-field-id', 'number');
+
+// Remove a field (requires field id)
+mySchema = Schema.delete.field(mySchema, 'field-id');
+
+// Convert schema to JSON preview
+const jsonPreview = Schema.convert.schemaToJson(mySchema.fields, {
+  collapsedFields: new Set(['field-id-to-collapse']),
+  forPreview: true
+});
+
+// Convert JSON to schema
+const convertedSchema = Schema.convert.jsonToSchema(
+  { name: 'John', age: 30, email: 'john@example.com' },
+  'User Schema'
+);
+```
+
+### Data Validation
+
+```typescript
+import { Validation } from 'mockingjar-lib';
+
+const data = {
+  name: 'John Doe',
+  email: 'john@example.com',
+  age: 30
+};
+
+const errors = Validation.validate(data, userSchema);
+
+if (errors.length === 0) {
+  console.log('Data is valid!');
+} else {
+  console.log('Validation errors:', errors);
+  // Each error contains: parent, affectedField, reason, structure
+}
+```
+
 ### Advanced Usage with Complex Schema
 
 ```typescript
-import { generateJsonData, JsonSchema } from 'mockingjar-lib';
+import { Generator } from 'mockingjar-lib';
 
 // Complex nested schema
-const orderSchema: JsonSchema = {
+const orderSchema = {
   name: 'Order',
   description: 'E-commerce order data',
   fields: [
@@ -130,7 +200,7 @@ const orderSchema: JsonSchema = {
 };
 
 // Generate order data with error recovery
-const result = await generateJsonData(
+const result = await Generator.generate(
   'your-anthropic-api-key',
   orderSchema,
   'Generate realistic e-commerce order data with various products',
@@ -146,77 +216,13 @@ console.log('Orders generated:', result.data?.length);
 console.log('Generation metadata:', result.metadata);
 ```
 
-### Schema Manipulation
-
-```typescript
-import { add, update, remove, convertSchemaToJson } from 'mockingjar-lib';
-
-let schema: JsonSchema = {
-    name: 'Test',
-    fields: []
-};
-
-// Add a new field to the schema root
-const updatedSchema = add.field(schema);
-
-// Add a field to an object (requires object field id)
-const schemaWithNestedField = add.objectField('object-field-id', schema);
-
-// Add a field to an array item object (requires array field id)
-const schemaWithArrayField = add.arrayItemObjectField('array-field-id', schema);
-
-// Update field type (requires field id and new type)
-const modifiedSchema = update.fieldType(schema, 'field-id', 'email');
-
-// Update array item field type (requires field id and new type)
-const arrayUpdatedSchema = update.arrayItemFieldType(schema, 'array-field-id', 'number');
-
-// Remove a field (requires field id)
-const cleanedSchema = remove.field(schema, 'field-id');
-
-// Convert schema to JSON preview
-const jsonPreview = convertSchemaToJson(schema.fields, {
-  collapsedFields: new Set(['field-id-to-collapse']),
-  forPreview: true
-});
-```
-
-### Working with Actual Schema Structure
-
-```typescript
-import { generateJsonData, JsonSchema } from 'mockingjar-lib';
-
-// The schema manipulation functions work with the actual schema structure
-// and return new schemas with auto-generated IDs and default values
-let mySchema: JsonSchema = {
-  name: 'User',
-  fields: [
-    {
-      id: 'user-1',
-      name: 'name',
-      type: 'text',
-      logic: { required: true }
-    }
-  ]
-};
-
-// Add a new field (creates auto-generated field with uuid)
-mySchema = add.field(mySchema);
-// This adds a field like: { id: 'uuid-here', name: 'newField', type: 'text', logic: { required: false } }
-
-// Convert to JSON structure for preview
-const previewJson = convertSchemaToJson(mySchema.fields);
-console.log(previewJson);
-// Output: { name: 'text', newField: 'text' }
-```
-
 ---
 
 ## Development
 
 ### Prerequisites
-- Node.js 18+ 
-- npm or yarn package manager
+- Node.js 16+ 
+- npm package manager
 - Anthropic API key for AI features
 
 ### Installation
@@ -235,8 +241,9 @@ npm install
 ```bash
 # Development
 npm run dev              # Watch mode compilation
-npm run build           # Production build
+npm run build           # Production build with minification
 npm run build:clean     # Clean build from scratch
+npm run build:no-minify # Build without minification
 npm run start           # Run compiled code
 
 # Testing
@@ -255,15 +262,6 @@ npm run compile         # Type check without output
 npm run compile:check   # Fast type check with skip lib check
 ```
 
-### Path Aliases
-
-The project uses TypeScript path aliases for clean imports:
-
-```typescript
-// Instead of: import { generateData } from '../../../lib/generator'
-import { generateJsonData } from '@/lib/generator';
-```
-
 ### Development Workflow
 
 1. **Make changes** to source files in `src/`
@@ -274,31 +272,28 @@ import { generateJsonData } from '@/lib/generator';
 
 ---
 
-
 ## Technology Stack
 
 ### Runtime & Language
-- **Runtime**: Node.js
+- **Runtime**: Node.js 16+
 - **Language**: TypeScript with strict mode
 - **Main Dependencies**: 
   - Anthropic Claude SDK for AI integration
   - Lodash for utility functions
   - UUID for unique identifiers
-  - Dotenv for environment configuration
 
 ### Development Tools
 - **Testing**: Jest with TypeScript support (ts-jest)
 - **Linting**: ESLint with TypeScript parser and strict rules
 - **Type Checking**: TypeScript compiler with strict configuration
-- **Build System**: TypeScript compiler with source maps and declarations
+- **Build System**: TypeScript compiler with minification
 - **Package Manager**: npm with lockfile for dependency consistency
 
 ### Architecture Highlights
 - **Type Safety**: Full TypeScript implementation with strict mode enabled
 - **Modular Design**: Clean separation of concerns with focused modules
-- **Comprehensive Testing**: Unit tests with high coverage for critical functionality
+- **Comprehensive Testing**: 146 unit tests with 88% coverage for critical functionality
 - **AI Integration**: Seamless integration with Anthropic Claude for intelligent data generation
-- **Path Aliases**: Clean imports using `@/` alias for src directory
 
 ---
 
@@ -307,28 +302,14 @@ import { generateJsonData } from '@/lib/generator';
 ```
 mockingjar-lib/
 ├── src/                              # Source code
-│   ├── index.ts                      # Main entry point
+│   ├── index.ts                      # Main entry point with module exports
 │   ├── lib/                          # Core business logic
-│   │   ├── __tests__/                # Unit tests
-│   │   │   ├── generator.test.ts     # Data generation tests
-│   │   │   └── validation.test.ts    # Validation system tests
-│   │   ├── _debug_/                  # Debug utilities and outputs
-│   │   ├── _debugger.ts              # Development debugging tools
-│   │   ├── anthropic.ts              # AI integration with Claude
-│   │   ├── generator.ts              # Data generation engine
-│   │   ├── schema.ts                 # Schema manipulation utilities
-│   │   └── validation.ts             # JSON validation system
 │   └── types/                        # TypeScript type definitions
-│       ├── generation.ts             # Generation process types
-│       ├── next-auth.d.ts            # Authentication types
-│       └── schema.ts                 # Schema structure types
+├── __tests__/                        # Comprehensive test suite
 ├── dist/                             # Compiled JavaScript output
 ├── coverage/                         # Test coverage reports
-├── .env                              # Environment configuration
-├── eslint.config.mjs                 # ESLint configuration
-├── jest.config.js                    # Jest testing configuration
-├── tsconfig.json                     # TypeScript configuration
-└── package.json                      # Project dependencies and scripts
+├── scripts/                          # Build and utility scripts
+└── README.md                         # Project documentation
 ```
 
 ### Key Directories
@@ -347,13 +328,16 @@ Complete type system for the library:
 
 - **schema.ts**: Schema field and structure type definitions with comprehensive field types
 - **generation.ts**: Generation process, results, and progress tracking types
-- **next-auth.d.ts**: Authentication type extensions (legacy, may be removed)
 
-#### `/src/lib/__tests__/` - Unit Tests
-Comprehensive test suite covering critical functionality:
+#### `/__tests__/` - Comprehensive Test Suite
+146 unit tests covering all critical functionality:
 
-- **generator.test.ts**: Tests for data generation, AI integration, and error recovery
-- **validation.test.ts**: Tests for schema validation and error reporting
+- **generator.test.js**: Tests for data generation, AI integration, and error recovery
+- **schema.test.js**: Tests for schema manipulation and CRUD operations
+- **validation.test.js**: Tests for schema validation and error reporting
+- **json-to-schema-conversion.test.js**: Tests for JSON-to-schema conversion
+- **deep-nested-deletion.test.js**: Tests for deep nested structure deletion
+- **deep-array-item-deletion.test.js**: Tests for complex array manipulation
 
 #### Core Library Features
 - **Field Management**: Add, update, and remove fields with deep nesting support
@@ -373,7 +357,7 @@ Comprehensive test suite covering critical functionality:
 
 ### JSON Schema Management
 
-The library provides comprehensive tools for creating and managing JSON schemas:
+The library provides comprehensive tools for creating and managing JSON schemas through the `Schema` module:
 
 #### Schema Field Types
 Support for all essential data types with full constraint configuration:
@@ -412,7 +396,7 @@ interface SchemaField {
 
 ### AI-Powered Data Generation
 
-Advanced data generation with AI integration and error recovery:
+Advanced data generation with AI integration and error recovery through the `Generator` module:
 
 #### Generation Process
 1. **Schema Analysis**: Parse and understand the schema structure
@@ -430,7 +414,7 @@ Advanced data generation with AI integration and error recovery:
 
 ### Validation System
 
-Comprehensive JSON validation engine with:
+Comprehensive JSON validation engine through the `Validation` module:
 - **Type & Constraint Validation**: Strict checking for all field types, lengths, ranges, patterns
 - **Structure Validation**: Nested object and array structure verification  
 - **Field Detection**: Identification of missing required fields and extra unidentified fields
@@ -466,23 +450,26 @@ Advanced error handling with surgical regeneration:
 
 ## Testing
 
-The project includes a comprehensive test suite covering all critical functionality:
+The project includes a comprehensive test suite covering all critical functionality with 146 tests and 88% code coverage:
 
 ### Test Structure
 ```
-src/lib/__tests__/
-├── generator.test.ts       # Data generation tests
-├── schema.test.ts          # Schema manipulation tests
-└── validation.test.ts      # Schema validation and error handling tests
+__tests__/
+├── generator.test.js                 # Data generation tests
+├── schema.test.js                    # Schema manipulation tests
+├── validation.test.js                # Schema validation and error handling tests
+├── json-to-schema-conversion.test.js # JSON conversion tests
+├── deep-nested-deletion.test.js      # Deep structure tests
+└── deep-array-item-deletion.test.js  # Array manipulation tests
 ```
 
 ### Test Coverage
 - **Schema Validation**: Comprehensive validation logic testing
-- **Schema Manipulation**: Comprehensive manipulation logic testing
-- **Data Generation**: Generation process testing
+- **Schema Manipulation**: Complete CRUD operations testing
+- **Data Generation**: AI integration and generation process testing
 - **Error Recovery**: Surgical regeneration and error handling
 - **Type Safety**: TypeScript type checking and constraint validation
-- **Edge Cases**: Boundary conditions and error scenarios
+- **Edge Cases**: Deep nesting, complex arrays, and boundary conditions
 
 ### Running Tests
 
@@ -500,11 +487,11 @@ npm run test:coverage
 npm run test:ci
 ```
 
-### Test Configuration
-- **Framework**: Jest with TypeScript support
-- **Setup**: Automated test environment configuration
-- **Coverage**: HTML and LCOV reports generated
-- **CI Integration**: Configured for continuous integration pipelines
+### Test Statistics
+- **Total Tests**: 146 tests across 6 test suites
+- **Code Coverage**: 88.32% overall coverage
+- **Test Framework**: Jest with TypeScript support
+- **Coverage Reports**: HTML and LCOV reports generated
 
 ---
 
@@ -554,7 +541,7 @@ npm run test:ci
 
 - **TypeScript**: Strict mode enabled with comprehensive typing
 - **ESLint**: Configured with TypeScript parser and strict rules
-- **Testing**: Unit tests required for new features
+- **Testing**: Unit tests required for new features (maintain 88%+ coverage)
 - **Documentation**: JSDoc comments for public APIs
 - **Commit Messages**: Conventional commit format preferred
 
@@ -581,32 +568,6 @@ npm run test:ci
    - Clear description of changes
    - Link to related issues
    - Include test results
-
----
-- 🎨 **Design & UX** - Enhance the user interface and experience
-- 🌍 **Spread the Word** - Share MockingJar with your network
-
-### 🚀 Getting Started
-
-1. **Fork the repository** and clone it locally
-2. **Read our code** - explore the codebase to understand the structure
-3. **Check Issues** - look for "good first issue" labels
-4. **Join Discussions** - participate in feature planning and design decisions
-5. **Submit PRs** - start small and grow your contributions over time
-
-#### Development Guidelines
-- Follow TypeScript strict mode requirements
-- Use Material UI design system components
-- Implement comprehensive test coverage
-- Follow conventional commit message format
-- Maintain code documentation and comments
-
-#### Code Quality Standards
-- ESLint configuration compliance
-- TypeScript type safety
-- React best practices
-- Performance optimization
-- Security considerations
 
 ### 💬 Community Guidelines
 
@@ -642,6 +603,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## Support
+
+For technical support, feature requests, or bug reports, please contact the development team or create an issue in the project repository.
 
 ---
 
