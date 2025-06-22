@@ -10,10 +10,10 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1'
   },
   collectCoverageFrom: [
-    'src/**/*.{js,ts}',
-    '!src/**/*.d.ts',
-    '!src/**/*.test.{js,ts}',
-    '!src/**/*.spec.{js,ts}'
+    'dist/**/*.{js,ts}',
+    '!dist/**/*.d.ts',
+    '!dist/**/*.test.{js,ts}',
+    '!dist/**/*.spec.{js,ts}'
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
