@@ -296,5 +296,42 @@ describe('JSON to Schema Conversion', () => {
       expect(result.name).toBe('Empty Test');
       expect(result.fields).toHaveLength(0);
     });
+
+    test('should throw error for root-level arrays', () => {
+      const jsonArray = [
+        { name: 'Item 1', value: 1 },
+        { name: 'Item 2', value: 2 }
+      ];
+
+      expect(() => {
+        Schema.convert.jsonToSchema(jsonArray, 'Invalid Array');
+      }).toThrow('JSON cannot start with an array as the root element. Array fields are allowed within objects, but the root must be an object.');
+    });
+
+    test('should throw error for null input', () => {
+      expect(() => {
+        Schema.convert.jsonToSchema(null, 'Null Test');
+      }).toThrow('JSON cannot be null or undefined.');
+    });
+
+    test('should throw error for undefined input', () => {
+      expect(() => {
+        Schema.convert.jsonToSchema(undefined, 'Undefined Test');
+      }).toThrow('JSON cannot be null or undefined.');
+    });
+
+    test('should throw error for primitive inputs', () => {
+      expect(() => {
+        Schema.convert.jsonToSchema('string', 'String Test');
+      }).toThrow('JSON must be an object. Primitive values are not allowed as the root element.');
+
+      expect(() => {
+        Schema.convert.jsonToSchema(123, 'Number Test');
+      }).toThrow('JSON must be an object. Primitive values are not allowed as the root element.');
+
+      expect(() => {
+        Schema.convert.jsonToSchema(true, 'Boolean Test');
+      }).toThrow('JSON must be an object. Primitive values are not allowed as the root element.');
+    });
   });
 });

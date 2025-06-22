@@ -316,6 +316,21 @@ export const convertJsonToSchema = (
   json: Record<string, unknown>,
   schemaName: string = 'Converted Schema'
 ): JsonSchema => {
+  // Validate that the root JSON is not an array
+  if (Array.isArray(json)) {
+    throw new Error('JSON cannot start with an array as the root element. Array fields are allowed within objects, but the root must be an object.');
+  }
+
+  // Validate that json is not null or undefined
+  if (json === null || json === undefined) {
+    throw new Error('JSON cannot be null or undefined.');
+  }
+
+  // Validate that json is an object
+  if (typeof json !== 'object') {
+    throw new Error('JSON must be an object. Primitive values are not allowed as the root element.');
+  }
+
   const fields = Object.entries(json).map(([key, value]) =>
     convertValueToSchemaField(key, value)
   );
