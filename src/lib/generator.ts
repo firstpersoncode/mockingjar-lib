@@ -314,13 +314,18 @@ export async function generateJsonData(
     });
 
     // Apply timeout if specified
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
     const response = (await (timeout
       ? Promise.race([
           apiCall,
-          new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Request timeout')), timeout)
-          ),
-        ])
+          new Promise((_, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Request timeout')), timeout);
+          }),
+        ]).finally(() => {
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+          }
+        })
       : apiCall)) as { content?: Array<{ type: string; text: string }> };
 
       if (!response.content?.[0]) {

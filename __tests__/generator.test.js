@@ -186,12 +186,15 @@ describe('Generator Unit Tests', () => {
     });
 
     test('should handle timeout option', async () => {
+      let timeoutId;
       const mockAnthropicClient = {
         messages: {
           create: jest.fn().mockImplementation(() => 
-            new Promise(resolve => setTimeout(() => resolve({
-              content: [{ type: 'text', text: '{"name": "John"}' }]
-            }), 2000))
+            new Promise(resolve => {
+              timeoutId = setTimeout(() => resolve({
+                content: [{ type: 'text', text: '{"name": "John"}' }]
+              }), 2000);
+            })
           )
         }
       };
@@ -208,10 +211,17 @@ describe('Generator Unit Tests', () => {
         ]
       };
 
-      const result = await Generator._generate(mockAnthropicClient, schema, 'Generate name', { timeout: 100 });
+      try {
+        const result = await Generator._generate(mockAnthropicClient, schema, 'Generate name', { timeout: 100 });
 
-      expect(result.success).toBe(false);
-      expect(result.errors[0]).toContain('Request timeout');
+        expect(result.success).toBe(false);
+        expect(result.errors[0]).toContain('Request timeout');
+      } finally {
+        // Clear the timeout to prevent Jest from hanging
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+      }
     });
 
     test('should handle missing Claude response content', async () => {
