@@ -1,4 +1,5 @@
 import { JsonSchema, SchemaField } from '@/types/schema';
+import { isEqual } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface GenerateSchemaPreviewOptions {
@@ -232,7 +233,7 @@ export const findAndRemoveField = (
       // Check children
       if (field.children) {
         const updatedChildren = findAndRemoveField(field.children, targetId);
-        if (updatedChildren.length !== field.children.length) {
+        if (!isEqual(updatedChildren, field.children)) {
           return { ...field, children: updatedChildren };
         }
       }
@@ -243,10 +244,7 @@ export const findAndRemoveField = (
           field.arrayItemType.children,
           targetId
         );
-        if (
-          updatedArrayItemChildren.length !==
-          field.arrayItemType.children.length
-        ) {
+        if (updatedArrayItemChildren !== field.arrayItemType.children) {
           return {
             ...field,
             arrayItemType: {
@@ -265,7 +263,7 @@ export const findAndRemoveField = (
         );
         if (
           nestedResult.length === 0 ||
-          nestedResult[0] !== field.arrayItemType
+          !isEqual(nestedResult[0], field.arrayItemType)
         ) {
           return { ...field, arrayItemType: nestedResult[0] };
         }

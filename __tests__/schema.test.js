@@ -891,10 +891,9 @@ describe('Schema Module', () => {
         
         const result = Schema.delete.field('level3', deeplyNestedSchema);
         
-        // Implementation doesn't handle deep nested deletion correctly
-        // The field still exists instead of being removed
-        expect(result.fields[0].children[0].children).toHaveLength(1);
-        expect(result.fields[0].children[0].children[0].id).toBe('level3');
+        // Deep nested deletion now works correctly after fix
+        // The field should be removed from deeply nested structure
+        expect(result.fields[0].children[0].children).toHaveLength(0);
       });
 
       test('should not modify original schema', () => {
